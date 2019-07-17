@@ -15,4 +15,5 @@ func init() {
 	orm.RegisterModel(new(User))
 	//创建表
 	orm.RunSyncdb("default", false, true)
+
 }
