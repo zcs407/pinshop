@@ -1,9 +1,9 @@
 package models
 
-import "github.com/astaxie/beego/orm"
-
-type User struct {
-}
+import (
+	"github.com/astaxie/beego/orm"
+	_ "github.com/go-sql-driver/mysql"
+)
 
 func init() {
 	//获取DB的配置文件
@@ -11,9 +11,20 @@ func init() {
 	//注册数据库
 	orm.RegisterDataBase("default", "mysql", dbInfo["dbuser"]+":"+
 		dbInfo["dbpwd"]+"@("+dbInfo["dbhost"]+":"+dbInfo["dbport"]+")/"+dbInfo["dbname"]+"?loc=Local")
+
 	//注册表
-	orm.RegisterModel(new(User))
+	orm.RegisterModel(new(User), new(Address))
 	//创建表
 	orm.RunSyncdb("default", false, true)
+}
 
+var (
+	//o       = orm.NewOrm()
+	user    User
+	address Address
+)
+
+func InserUser() {
+	o := orm.NewOrm()
+	o.QueryTable(user)
 }

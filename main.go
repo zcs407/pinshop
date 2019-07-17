@@ -1,11 +1,11 @@
 package main
 
 import (
-	_ "pinshop/routers"
 	"github.com/astaxie/beego"
+	_ "pinshop/models"
+	_ "pinshop/routers"
 )
 
 func main() {
 	beego.Run()
 }
-
