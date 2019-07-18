@@ -27,4 +27,5 @@ var (
 func InserUser() {
 	o := orm.NewOrm()
 	o.QueryTable(user)
+
 }
