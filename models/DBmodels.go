@@ -17,15 +17,3 @@ func init() {
 	//创建表
 	orm.RunSyncdb("default", false, true)
 }
-
-var (
-	//o       = orm.NewOrm()
-	user    User
-	address Address
-)
-
-func InserUser() {
-	o := orm.NewOrm()
-	o.QueryTable(user)
-
-}
