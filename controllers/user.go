@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"encoding/base64"
 	"fmt"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
@@ -17,17 +18,9 @@ type UserController struct {
 	beego.Controller
 }
 
-func (this *UserController) ShowLogin() {
-	this.TplName = "login.html"
-}
-
-func (this *UserController) Login() {
-	fmt.Println("")
-}
 func (this *UserController) ShowRegister() {
 	this.TplName = "register.html"
 }
-
 func (this *UserController) HandleCreateUser() {
 	phone := this.GetString("phone")
 	vscode := this.GetString("code")
@@ -122,7 +115,7 @@ func (this *UserController) ShowActive() {
 	this.Data["id"] = id
 	this.TplName = "register-email.html"
 }
-func (this *UserController) ActicveEmail() {
+func (this *UserController) ActiveEmail() {
 	id, err := this.GetInt("id")
 	if err != nil {
 		this.Data["errmsg"] = "获取id不正确"
@@ -155,4 +148,88 @@ func (this *UserController) ActicveEmail() {
 		return
 	}
 	this.Redirect("/", 302)
+}
+func (this *UserController) ActiveUser() {
+	//获取数据
+	id, _ := this.GetInt("id")
+	email := this.GetString("email")
+	//校验数据
+
+	//处理数据
+	//获取orm对象
+	o := orm.NewOrm()
+	//获取user对象
+	var user models.User
+	//赋值
+	user.Id = id
+	o.Read(&user)
+	user.Email = email
+	user.Active = true
+	//更新数据
+	o.Update(&user)
+	this.Data["errmsg"] = "激活成功"
+	this.Redirect("/login?id="+strconv.Itoa(id), 302)
+}
+func (this *UserController) ShowLogin() {
+	//id, _ := this.GetInt("id")
+	userName := this.Ctx.GetCookie("userName")
+
+	if userName != "" {
+		dec, _ := base64.StdEncoding.DecodeString(userName)
+		this.Data["userName"] = string(dec)
+		fmt.Println("获取到的cookie用户名", string(dec))
+		this.Data["checked"] = "checked"
+	} else {
+		this.Data["userName"] = ""
+		this.Data["checked"] = ""
+	}
+	this.TplName = "login.html"
+}
+func (this *UserController) HandleLogin() {
+	id, _ := this.GetInt("id")
+	userName := this.GetString("userName")
+	password := this.GetString("password")
+	if password == "" || userName == "" {
+		this.Data["errmsg"] = "用户名和密码不能为空"
+		this.Redirect("/login?id="+strconv.Itoa(id), 302)
+		return
+	}
+
+	o := orm.NewOrm()
+	var user models.User
+	user.Name = userName
+	err := o.Read(&user, "Name")
+	if err != nil {
+		this.Data["errmsg"] = "用户不存在"
+		this.Redirect("/login?id="+strconv.Itoa(id), 302)
+		return
+	}
+	if password != user.PassWord {
+		this.Data["errmsg"] = "用户或密码不对"
+		this.Redirect("/login?id="+strconv.Itoa(id), 302)
+		return
+	}
+	remember := this.GetString("remember")
+	if remember == "on" {
+		enc := base64.StdEncoding.EncodeToString([]byte(userName))
+		this.Ctx.SetCookie("userName", enc, 60*60)
+		fmt.Println("执行了设置cookie")
+	} else {
+		this.Ctx.SetCookie("userName", userName, -1)
+	}
+
+	conn, err := redis.Dial("tcp", "172.16.10.11:6379")
+	if err != nil {
+		fmt.Println("连接redis，错误：", err)
+		return
+	}
+	_, err = conn.Do("set", userName, userName)
+	if err != nil {
+		fmt.Println("redis 写入session错误:", err)
+	}
+	defer conn.Close()
+	id = user.Id
+
+	this.Redirect("/?id="+strconv.Itoa(id), 302)
+
 }
