@@ -242,12 +242,14 @@ func (this *UserController) ShowLogout() {
 func (this *UserController) ShowUserCenterInfo() {
 	userName := this.GetSession("userName")
 	o := orm.NewOrm()
-	var user models.User
-	user.Name = userName.(string)
-	o.Read(&user)
+	var address models.Address
+	qs := o.QueryTable("Address").RelatedSel("User").Filter("User__Name", userName.(string))
+	qs.Filter("Isdefault", true).One(&address)
 
 	//给页面赋值
-	this.Data["userName"] = user.Name
+	this.Data["userName"] = userName.(string)
+	this.Data["phone"] = address.Phone
+	this.Data["addr"] = address.Addr
 	this.TplName = "user_center_info.html"
 }
 
@@ -261,9 +263,12 @@ func (this *UserController) ShowUserAddress() {
 	this.Data["userName"] = uAddress.Receiver
 	this.Data["address"] = uAddress.Addr
 	phnum := uAddress.Phone
-	per := phnum[0:3]
-	has := phnum[7:]
-	this.Data["phone"] = per + "****" + has
+	if len(phnum) > 10 {
+		per := phnum[0:3]
+		has := phnum[7:]
+		this.Data["phone"] = per + "****" + has
+	}
+
 	fmt.Println(uAddress)
 	this.TplName = "user_center_site.html"
 }
