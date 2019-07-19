@@ -13,7 +13,7 @@ func init() {
 		dbInfo["dbpwd"]+"@("+dbInfo["dbhost"]+":"+dbInfo["dbport"]+")/"+dbInfo["dbname"]+"?loc=Local")
 
 	//注册表
-	orm.RegisterModel(new(User), new(Address))
+	orm.RegisterModel(new(User), new(Address), new(TpshopCategory))
 	//创建表
 	orm.RunSyncdb("default", false, true)
 }

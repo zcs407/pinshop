@@ -191,7 +191,7 @@ func (this *UserController) HandleLogin() {
 	password := this.GetString("password")
 	if password == "" || userName == "" {
 		this.Data["errmsg"] = "用户名和密码不能为空"
-		this.Redirect("/login?id="+strconv.Itoa(id), 302)
+		this.Redirect("/st/login?id="+strconv.Itoa(id), 302)
 		return
 	}
 
@@ -201,12 +201,12 @@ func (this *UserController) HandleLogin() {
 	err := o.Read(&user, "Name")
 	if err != nil {
 		this.Data["errmsg"] = "用户不存在"
-		this.Redirect("/login?id="+strconv.Itoa(id), 302)
+		this.Redirect("/st/login?id="+strconv.Itoa(id), 302)
 		return
 	}
 	if password != user.PassWord {
 		this.Data["errmsg"] = "用户或密码不对"
-		this.Redirect("/login?id="+strconv.Itoa(id), 302)
+		this.Redirect("/st/login?id="+strconv.Itoa(id), 302)
 		return
 	}
 	remember := this.GetString("remember")
@@ -217,6 +217,7 @@ func (this *UserController) HandleLogin() {
 	} else {
 		this.Ctx.SetCookie("userName", userName, -1)
 	}
+	this.SetSession("userName", userName)
 
 	conn, err := redis.Dial("tcp", "172.16.10.11:6379")
 	if err != nil {
@@ -230,6 +231,82 @@ func (this *UserController) HandleLogin() {
 	defer conn.Close()
 	id = user.Id
 
-	this.Redirect("/?id="+strconv.Itoa(id), 302)
+	this.Redirect("/st/?id="+strconv.Itoa(id), 302)
 
+}
+func (this *UserController) ShowLogout() {
+	this.DelSession("userName")
+	this.Redirect("/login", 302)
+}
+
+func (this *UserController) ShowUserCenterInfo() {
+	userName := this.GetSession("userName")
+	o := orm.NewOrm()
+	var user models.User
+	user.Name = userName.(string)
+	o.Read(&user)
+
+	//给页面赋值
+	this.Data["userName"] = user.Name
+	this.TplName = "user_center_info.html"
+}
+
+func (this *UserController) ShowUserAddress() {
+	userName := this.GetSession("userName")
+	o := orm.NewOrm()
+	var uAddress models.Address
+
+	qs := o.QueryTable("Address").RelatedSel("User").Filter("User__Name", userName.(string))
+	qs.Filter("Isdefault", true).One(&uAddress)
+	this.Data["userName"] = uAddress.Receiver
+	this.Data["address"] = uAddress.Addr
+	phnum := uAddress.Phone
+	per := phnum[0:3]
+	has := phnum[7:]
+	this.Data["phone"] = per + "****" + has
+	fmt.Println(uAddress)
+	this.TplName = "user_center_site.html"
+}
+func (this *UserController) HandleAddress() {
+	//获取用户填写数据
+	userName := this.GetSession("userName")
+	Receiver := this.GetString("Receiver")
+	address := this.GetString("address")
+	zipCode := this.GetString("zipCode")
+	phone := this.GetString("phone")
+	if Receiver == "" || address == "" || zipCode == "" || phone == "" {
+		this.Data["errmsg"] = "填写信息不完整"
+		this.Redirect("/st/user_center_site", 302)
+		return
+	}
+	o := orm.NewOrm()
+
+	var user models.User
+	user.Name = userName.(string)
+	o.Read(&user, "Name")
+
+	var uAddress models.Address
+	qs := o.QueryTable("Address").RelatedSel("User").Filter("User__Name", userName.(string))
+	qs.Filter("Isdefault", true).One(&uAddress)
+
+	//先将之前所有地址更新为非默认地址
+	uAddress.Isdefault = false
+	o.Update(&uAddress)
+
+	//获取新的收货人信息并更新为默认地址
+	var newAddress models.Address
+	newAddress.Receiver = Receiver
+	newAddress.Addr = address
+	newAddress.Phone = phone
+	newAddress.Zipcode = zipCode
+	newAddress.Isdefault = true
+	newAddress.User = &user
+	n, err := o.Insert(&newAddress)
+	if err != nil {
+		fmt.Println("插入地址数据失败", err)
+		this.Redirect("/st/user_center_site", 302)
+		return
+	}
+	fmt.Println("C插入数据为", n)
+	this.Redirect("/st/user_center_site", 302)
 }

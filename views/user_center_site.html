@@ -11,17 +11,13 @@
 		<div class="header">
 			<div class="welcome fl">欢迎来到品优购生鲜!</div>
 			<div class="fr">
-				<div class="login_info fl">
-					欢迎您：<em>张 山</em>
-				</div>
-				<div class="login_btn fl">
-					<a href="login.html">登录</a>
-					<span>|</span>
-					<a href="register.html">注册</a>
-				</div>
 				<div class="user_link fl">
 					<span>|</span>
-					<a href="user_center_info.html">用户中心</a>
+					<a href="">{{.userName}}</a>
+					<span>|</span>
+					<a href="/logout">退出登录</a>
+					<span>|</span>
+					<a href="/st/userCenterInfo">用户中心</a>
 					<span>|</span>
 					<a href="cart.html">我的购物车</a>
 					<span>|</span>
@@ -44,9 +40,9 @@
 		<div class="left_menu_con clearfix">
 			<h3>用户中心</h3>
 			<ul>
-				<li><a href="user_center_info.html">· 个人信息</a></li>
+				<li><a href="/st/userCenterInfo">· 个人信息</a></li>
 				<li><a href="user_center_order.html">· 全部订单</a></li>
-				<li><a href="user_center_site.html" class="active">· 收货地址</a></li>
+				<li><a href="/st/user_center_site" class="active">· 收货地址</a></li>
 			</ul>
 		</div>
 		<div class="right_content clearfix">
@@ -54,30 +50,30 @@
 				<div class="site_con">
 					<dl>
 						<dt>当前地址：</dt>
-						<dd>北京市 海淀区 东北旺西路8号中关村软件园 （李思 收） 182****7528</dd>
+						<dd>{{.address}} （{{.userName}} 收） {{.phone}}</dd>
 					</dl>					
 				</div>
 				<h3 class="common_title2">编辑地址</h3>
 				<div class="site_con">
-					<form>
+					<form method="post">
 						<div class="form_group">
 							<label>收件人：</label>
-							<input type="text" name="">
+							<input type="text" name="Receiver">
 						</div>
 						<div class="form_group form_group2">
 							<label>详细地址：</label>
-							<textarea class="site_area"></textarea>
+							<textarea class="site_area" name="address"></textarea>
 						</div>
 						<div class="form_group">
 							<label>邮编：</label>
-							<input type="text" name="">
+							<input type="text" name="zipCode">
 						</div>
 						<div class="form_group">
 							<label>手机：</label>
-							<input type="text" name="">
+							<input type="text" name="phone">
 						</div>
-
-						<input type="submit" name="" value="提交" class="info_submit">
+						<input type="submit"  value="提交" class="info_submit">
+						<span>{{.errmsg}}</span>
 					</form>
 				</div>
 		</div>

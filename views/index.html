@@ -27,13 +27,15 @@
 					<div class="shortcut">
 						<ul class="fl">
 							<li class="f-item">品优购欢迎您:</li>
-							<span class="username">{{if .userName}}{{.userName}}{{else}}							<li class="f-item">请<a href="/login" target="_blank">登录</a>　<span><a href="/register" target="_blank">免费注册</a></span></li>
+							<span class="username">{{if .userName}} <li class="f-item">	 {{.userName}}<span><a href="/logout" target="_blank">&nbsp;&nbsp;&nbsp; 退出登录</a></span></li>
+								{{else}}
+									<li class="f-item">请<a href="/login" target="_blank">登录</a>　<span><a href="/register" target="_blank">免费注册</a></span></li>
 								{{end}}</span>
 						</ul>
 						<ul class="fr">
 							<li class="f-item">我的订单</li>
 							<li class="f-item space"></li>
-							<li class="f-item"><a href="home.html" target="_blank">我的品优购</a></li>
+							<li class="f-item"><a href="/st/userCenterInfo" target="_blank">我的品优购</a></li>
 							<li class="f-item space"></li>
 							<li class="f-item">品优购会员</li>
 							<li class="f-item space"></li>

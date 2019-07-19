@@ -111,3 +111,12 @@ type OrderGoods struct { //订单商品表
 	Price     int        //商品价格
 	Comment   string     `orm:"default('')"` //评论
 }
+type TpshopCategory struct {
+	Id         int
+	CateName   string `orm:"default('')"`
+	Pid        int    `orm:"default(0)"`
+	IsShow     int    `orm:"default(0)"`
+	CreateTime int    `orm:"null"`
+	UpdateTime int    `orm:"null"`
+	DeleteTime int    `orm:"null"`
+}
