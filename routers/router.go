@@ -24,14 +24,18 @@ func init() {
 	beego.Router("/st/userCenterInfo", &controllers.UserController{}, "get:ShowUserCenterInfo")
 	//用户地址管理
 	beego.Router("/st/user_center_site", &controllers.UserController{}, "get:ShowUserAddress;post:HandleAddress")
+	//生鲜页面展示
 	beego.Router("/st/index_sx", &controllers.GoodsController{}, "get:ShowIndexSX")
+	//生鲜信息页面展示
 	beego.Router("/st/sxDetail", &controllers.GoodsController{}, "get:ShowSxDetail")
+	//生鲜列表页面展示
+	beego.Router("/st/sxlist", &controllers.GoodsController{}, "get:ShowSxList")
 }
 
 func filters(cxt *context.Context) {
 	userName := cxt.Input.Session("userName")
 	if userName == nil {
-		cxt.Redirect(302, "/login")
-		return
+		//cxt.Redirect(302, "/login")
+		//return
 	}
 }
