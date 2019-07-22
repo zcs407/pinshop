@@ -24,7 +24,8 @@ func init() {
 	beego.Router("/st/userCenterInfo", &controllers.UserController{}, "get:ShowUserCenterInfo")
 	//用户地址管理
 	beego.Router("/st/user_center_site", &controllers.UserController{}, "get:ShowUserAddress;post:HandleAddress")
-
+	beego.Router("/st/index_sx", &controllers.GoodsController{}, "get:ShowIndexSX")
+	beego.Router("/st/sxDetail", &controllers.GoodsController{}, "get:ShowSxDetail")
 }
 
 func filters(cxt *context.Context) {

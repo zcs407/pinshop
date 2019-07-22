@@ -1,6 +1,8 @@
 package models
 
-import "time"
+import (
+	"time"
+)
 
 type User struct { //用户表
 	Id       int
@@ -56,7 +58,7 @@ type GoodsSKU struct { //商品SKU表
 	GoodsImage           []*GoodsImage           `orm:"reverse(many)"`
 	IndexGoodsBanner     []*IndexGoodsBanner     `orm:"reverse(many)"`
 	IndexTypeGoodsBanner []*IndexTypeGoodsBanner `orm:"reverse(many)"`
-	OrderGoods           []*OrderGoods           `orm:"reverse(many)"`
+	//OrderGoods           []*OrderGoods           `orm:"reverse(many)"`
 }
 
 type GoodsImage struct { //商品图片表
@@ -71,7 +73,7 @@ type IndexGoodsBanner struct { //首页轮播商品展示表
 	Index    int       `orm:"default(0)"` //展示顺序
 }
 
-type IndexTypeGoodsBanner struct { //首页分类商品展示表
+type IndexTypeGoodsBanner struct {
 	Id          int
 	GoodsType   *GoodsType `orm:"rel(fk)"`    //商品类型
 	GoodsSKU    *GoodsSKU  `orm:"rel(fk)"`    //商品sku

@@ -238,7 +238,6 @@ func (this *UserController) ShowLogout() {
 	this.DelSession("userName")
 	this.Redirect("/login", 302)
 }
-
 func (this *UserController) ShowUserCenterInfo() {
 	userName := this.GetSession("userName")
 	o := orm.NewOrm()
@@ -252,7 +251,6 @@ func (this *UserController) ShowUserCenterInfo() {
 	this.Data["addr"] = address.Addr
 	this.TplName = "user_center_info.html"
 }
-
 func (this *UserController) ShowUserAddress() {
 	userName := this.GetSession("userName")
 	o := orm.NewOrm()
