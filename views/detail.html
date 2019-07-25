@@ -39,7 +39,7 @@
 			<input type="button" class="input_btn fr" name="" value="搜索">
 		</div>
 		<div class="guest_cart fr">
-			<a href="cart.html" class="cart_name fl">我的购物车</a>
+			<a href="/st/cart" class="cart_name fl">我的购物车</a>
 			<div class="goods_count fl" id="show_count">1</div>
 		</div>
 	</div>
@@ -94,7 +94,7 @@
 			<div class="total">总价：<em>16.80元</em></div>
 			<div class="operate_btn">
 				<a href="javascript:;" class="buy_btn">立即购买</a>
-				<a href="javascript:;" class="add_cart" id="add_cart">加入购物车</a>				
+				<a href="javascript:;" class="add_cart" id="add_cart" skuid="{{.goods.Id}}">加入购物车</a>
 			</div>
 		</div>
 	</div>
@@ -106,8 +106,8 @@
 				<ul>
 					{{range .newGoods}}
 					<li>
-						<a href="/st/sxDetail?id={{.Id}}"><img src="http://172.16.10.11:8866/{{.Image}}"></a>
-						<h4><a href="/st/sxDetail?id={{.Id}}">{{.Name}}</a></h4>
+						<a href="/sxDetail?id={{.Id}}"><img src="http://172.16.10.11:8866/{{.Image}}"></a>
+						<h4><a href="/sxDetail?id={{.Id}}">{{.Name}}</a></h4>
 						<div class="{{.GoodsType.Logo}}">￥{{.Price}}</div>
 					</li>
 					{{end}}
@@ -148,16 +148,75 @@
 	</div>
 	<div class="add_jump"></div>
 
-	<script type="text/javascript" src="js/jquery-1.12.2.js"></script>
+	<script type="text/javascript" src="../static/js/jquery-1.12.4.min.js"></script>
 	<script type="text/javascript">
+		//计算总价
+		CalTotalPrice();
+		function CalTotalPrice() {
+			//获取单价
+			price =$('.show_pirze').children('em').text();
+			//获取数量
+			count = $('.num_show').val();
+
+			totalPrice = parseInt(price)*parseInt(count);
+			//返回数据
+			$('.total').children('em').text(totalPrice+'元')
+		}
+
+		//添加商品数据量
+		$('.add').click(function () {
+			count = $('.num_show').val();
+			count = parseInt(count)+1;
+
+			//返回数据
+			$('.num_show').val(count);
+			CalTotalPrice()
+		});
+
+		//减少商品数量
+		$('.minus').click(function () {
+			count = $('.num_show').val();
+			count = parseInt(count)-1;
+			if (count<=1){
+				count =1
+			}
+
+			//返回数据
+			$('.num_show').val(count);
+			CalTotalPrice()
+		});
+
+		//手动输入商品数量 找标签 找事件 写方法 返回数据
+		$('.num_show').blur(function () {
+			count = $(this).val();
+			if(parseInt(count)<=0||isNaN(count)||count.trim().length==0){
+				count=1
+			}
+			$(this).val(parseInt(count));
+			CalTotalPrice()
+		});
+
+
 		var $add_x = $('#add_cart').offset().top;
 		var $add_y = $('#add_cart').offset().left;
 
 		var $to_x = $('#show_count').offset().top;
 		var $to_y = $('#show_count').offset().left;
 
-		$(".add_jump").css({'left':$add_y+80,'top':$add_x+10,'display':'block'})
-		$('#add_cart').click(function(){
+
+		$(".add_jump").css({'left':$add_y+80,'top':$add_x+10,'display':'block'});
+			$('#add_cart').click(function () {
+				//写方法，发送请求 传送数据 数量 商品id
+			count = $('.num_show').val();
+			skuid = $(this).attr("skuid");
+			param = {"count":count,"skuid":skuid};
+			$.post("/addCart",param,function (data) {
+				if (data.status != 200){
+					alert(data.msg)
+				}
+
+			});
+
 			$(".add_jump").stop().animate({
 				'left': $to_y+7,
 				'top': $to_x+7},
@@ -165,7 +224,6 @@
 					$(".add_jump").fadeOut('fast',function(){
 						$('#show_count').html(2);
 					});
-
 			});
 		})
 	</script>

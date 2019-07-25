@@ -191,7 +191,7 @@ func (this *UserController) HandleLogin() {
 	password := this.GetString("password")
 	if password == "" || userName == "" {
 		this.Data["errmsg"] = "用户名和密码不能为空"
-		this.Redirect("/st/login?id="+strconv.Itoa(id), 302)
+		this.Redirect("/login?id="+strconv.Itoa(id), 302)
 		return
 	}
 
@@ -201,12 +201,12 @@ func (this *UserController) HandleLogin() {
 	err := o.Read(&user, "Name")
 	if err != nil {
 		this.Data["errmsg"] = "用户不存在"
-		this.Redirect("/st/login?id="+strconv.Itoa(id), 302)
+		this.Redirect("/login?id="+strconv.Itoa(id), 302)
 		return
 	}
 	if password != user.PassWord {
 		this.Data["errmsg"] = "用户或密码不对"
-		this.Redirect("/st/login?id="+strconv.Itoa(id), 302)
+		this.Redirect("/login?id="+strconv.Itoa(id), 302)
 		return
 	}
 	remember := this.GetString("remember")
@@ -231,7 +231,7 @@ func (this *UserController) HandleLogin() {
 	defer conn.Close()
 	id = user.Id
 
-	this.Redirect("/st/?id="+strconv.Itoa(id), 302)
+	this.Redirect("/?id="+strconv.Itoa(id), 302)
 
 }
 func (this *UserController) ShowLogout() {
@@ -245,7 +245,30 @@ func (this *UserController) ShowUserCenterInfo() {
 	qs := o.QueryTable("Address").RelatedSel("User").Filter("User__Name", userName.(string))
 	qs.Filter("Isdefault", true).One(&address)
 
+	var goodsSkus []models.GoodsSKU
+	if userName != nil {
+		redcon, err := redis.Dial("tcp", "172.16.10.11:6379")
+		if err != nil {
+			panic(err)
+		}
+		ids, err := redis.Ints(redcon.Do("lrange", userName.(string)+"his", 0, 4))
+		if err != nil {
+			panic(err)
+		}
+
+		for _, id := range ids {
+			var goodsSku models.GoodsSKU
+			goodsSku.Id = id
+			o.Read(&goodsSku)
+
+			goodsSkus = append(goodsSkus, goodsSku)
+		}
+
+	}
+	fmt.Println("====--------===", goodsSkus)
+
 	//给页面赋值
+	this.Data["goodsSkus"] = goodsSkus
 	this.Data["userName"] = userName.(string)
 	this.Data["phone"] = address.Phone
 	this.Data["addr"] = address.Addr

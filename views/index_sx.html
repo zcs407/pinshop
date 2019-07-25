@@ -62,7 +62,7 @@
 	<div class="center_con clearfix">
 		<ul class="subnav fl">
 			{{range .goodsTypes}}
-			<li><a href="/st/sxlist?id={{.Id}}" class="{{.Logo}}">{{.Name}}</a></li>
+			<li><a href="/sxlist?id={{.Id}}" class="{{.Logo}}">{{.Name}}</a></li>
 			{{end}}
 		</ul>
 		<div class="slide fl">
@@ -89,7 +89,7 @@
 			<div class="subtitle fl">
 				<span>|</span>
 				{{range .textGoods}}
-				<a href="/st/sxDetail?id={{.GoodsSKU.Id}}">{{.GoodsSKU.Name}}</a>
+				<a href="/sxDetail?id={{.GoodsSKU.Id}}">{{.GoodsSKU.Name}}</a>
 				{{end}}
 			</div>
 			<a href="#" class="goods_more fr" id="fruit_more">查看更多 ></a>
@@ -101,7 +101,7 @@
 				{{range .imgGoods}}
 				<li>
 					<h4><a href="#">{{.GoodsSKU.Name}}</a></h4>
-					<a href="/st/sxDetail?id={{.GoodsSKU.Id}}"><img src="http://172.16.10.11:8866/{{.GoodsSKU.Image}}"></a>
+					<a href="/sxDetail?id={{.GoodsSKU.Id}}"><img src="http://172.16.10.11:8866/{{.GoodsSKU.Image}}"></a>
 					<div class="prize">¥ {{.GoodsSKU.Price}}</div>
 				</li>
 				{{end}}

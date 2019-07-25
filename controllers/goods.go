@@ -4,7 +4,9 @@ import (
 	"fmt"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
+	"github.com/gomodule/redigo/redis"
 	"pinshop/models"
+	"strconv"
 )
 
 type GoodsController struct {
@@ -111,10 +113,25 @@ func (this *GoodsController) ShowSxDetail() {
 	//一类商品的信息SPU，外键时商品的类型
 	//o.QueryTable("GoodsSKU").RelatedSel("Goods").Filter("")
 
+	username := this.GetSession("userName")
+	if username != nil {
+
+		fmt.Println("开始连接redis")
+		redconn, err := redis.Dial("tcp", "172.16.10.11:6379")
+		if err != nil {
+			panic(err)
+		}
+		fmt.Println("开始写入数据")
+		redconn.Do("lrem", username.(string)+"his", 0, id)
+		_, err = redconn.Do("lpush", username.(string)+"his", id)
+		if err != nil {
+			panic(err)
+		}
+	}
+
 	this.Data["goodsTypes"] = goodsTypes
 	this.Data["goods"] = goods
 	this.Data["newGoods"] = newGoods
-	fmt.Println(goods.Name)
 	this.TplName = "detail.html"
 }
 
@@ -140,7 +157,7 @@ func (this *GoodsController) ShowSxList() {
 
 	//调用分页函数
 	count, _ := qs.Count()
-	pages, prePage, nextPage := splitPage(6, int(count), pageSize, pageIndex)
+	pages, prePage, nextPage := splitPage(3, int(count), pageSize, pageIndex)
 	//查出相关类型的最新的两个商品
 	var newGoodsSkus []models.GoodsSKU
 	o.QueryTable("GoodsSKU").RelatedSel("GoodsType").Filter("GoodsType__Id", goodsTypeId).OrderBy("-Time").Limit(2, 0).All(&newGoodsSkus)
@@ -162,4 +179,16 @@ func (this *GoodsController) ShowSxList() {
 	this.Data["prePage"] = prePage
 	this.Data["nextPage"] = nextPage
 	this.TplName = "list.html"
+}
+
+func (this *GoodsController) SearchGoods() {
+	searchName := this.GetString("searchName")
+	id, _ := this.GetInt("id")
+	sort := this.GetString("sort")
+	pageIndex := this.GetString("pageIndex")
+	if searchName == "" {
+		this.Redirect("/sxlist?id="+strconv.Itoa(id)+"&sort="+sort+"&pageIndex="+pageIndex, 302)
+		return
+	}
+	this.TplName = "search.html"
 }

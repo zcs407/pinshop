@@ -34,8 +34,10 @@
 	<div class="search_bar clearfix">
 		<a href="index.html" class="logo fl"><img src="../static/images/logo.png"></a>
 		<div class="search_con fl">
-			<input type="text" class="input_text fl" name="" placeholder="搜索商品">
-			<input type="button" class="input_btn fr" name="" value="搜索">
+			<form action="/search" method="post">
+				<input type="text" class="input_text fl" name="" placeholder="搜索商品">
+				<input type="submit" class="input_btn fr" name="" value="搜索">
+			</form>
 		</div>
 		<div class="guest_cart fr">
 			<a href="#" class="cart_name fl">我的购物车</a>
@@ -80,8 +82,8 @@
 				<ul>
 					{{range .newGoodsSkus}}
 					<li>
-						<a href="/st/sxDetail?id={{.Id}}"><img src="http://172.16.10.11:8866/{{.Image}}"></a>
-						<h4><a href="/st/sxDetail?id={{.Id}}">{{.Name}}</a></h4>
+						<a href="/sxDetail?id={{.Id}}"><img src="http://172.16.10.11:8866/{{.Image}}"></a>
+						<h4><a href="/sxDetail?id={{.Id}}">{{.Name}}</a></h4>
 						<div class="prize">￥{{.Price}}</div>
 					</li>
 					{{end}}
@@ -91,16 +93,16 @@
 
 		<div class="r_wrap fr clearfix">
 			<div class="sort_bar">
-				<a href="/st/sxlist?id={{.typeId}}" {{if compare .sort "" }} class="active"{{end}}>默认</a>
-				<a href="/st/sxlist?id={{.typeId}}&sort=price" {{if compare .sort "price"}} class="active"{{end}}>价格</a>
-				<a href="/st/sxlist?id={{.typeId}}&sort=sale" {{if compare .sort "sale"}} class="active"{{end}}>人气</a>
+				<a href="/sxlist?id={{.typeId}}" {{if compare .sort "" }} class="active"{{end}}>默认</a>
+				<a href="/sxlist?id={{.typeId}}&sort=price" {{if compare .sort "price"}} class="active"{{end}}>价格</a>
+				<a href="/sxlist?id={{.typeId}}&sort=sale" {{if compare .sort "sale"}} class="active"{{end}}>人气</a>
 			</div>
 
 			<ul class="goods_type_list clearfix">
 				{{range .goodsSkus}}
 				<li>
-					<a href="/st/sxDetail?id={{.Id}}"><img src="http://172.16.10.11:8866/{{.Image}}"></a>
-					<h4><a href="/st/sxDetail?id={{.Id}}">{{.Name}}</a></h4>
+					<a href="/sxDetail?id={{.Id}}"><img src="http://172.16.10.11:8866/{{.Image}}"></a>
+					<h4><a href="/sxDetail?id={{.Id}}">{{.Name}}</a></h4>
 					<div class="operate">
 						<span class="prize">￥{{.Price}}</span>
 						<span class="unit">{{.Price}}/{{.Unite}}</span>
@@ -111,11 +113,11 @@
 			</ul>
 
 			<div class="pagenation">
-				<a href="/st/sxlist?id={{$.typeId}}&sort={{$.sort}}&pageIndex={{$.prePage}}"><上一页</a>
+				<a href="/sxlist?id={{$.typeId}}&sort={{$.sort}}&pageIndex={{$.prePage}}"><上一页</a>
 				{{range $k,$v := .pages}}
-				<a href="/st/sxlist?id={{$.typeId}}&sort={{$.sort}}&pageIndex={{$v}}" {{if compare $v $.pageIndex}}class="active"{{end}}>{{$v}}</a>
+				<a href="/sxlist?id={{$.typeId}}&sort={{$.sort}}&pageIndex={{$v}}" {{if compare $v $.pageIndex}}class="active"{{end}}>{{$v}}</a>
 				{{end}}
-				<a href="/st/sxlist?id={{$.typeId}}&sort={{$.sort}}&pageIndex={{$.nextPage}}">下一页></a>
+				<a href="/sxlist?id={{$.typeId}}&sort={{$.sort}}&pageIndex={{$.nextPage}}">下一页></a>
 			</div>
 		</div>
 	</div>

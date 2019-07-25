@@ -14,7 +14,8 @@ func init() {
 
 	//注册表
 	orm.RegisterModel(new(User), new(Address), new(TpshopCategory), new(Goods), new(GoodsType),
-		new(GoodsSKU), new(GoodsImage), new(IndexGoodsBanner), new(IndexTypeGoodsBanner), new(IndexPromotionBanner))
+		new(GoodsSKU), new(GoodsImage), new(IndexGoodsBanner), new(IndexTypeGoodsBanner),
+		new(IndexPromotionBanner), new(OrderInfo), new(OrderGoods))
 	//创建表
 	orm.RunSyncdb("default", false, true)
 }
